@@ -8,7 +8,7 @@ const { getTodos,
 // API ENDPOINTS
 
 // get todo list
-router.get('/todo', getTodos);
+router.get('/todos', getTodos);
 
 // // create a todo
 router.post('/todo', createTodo);

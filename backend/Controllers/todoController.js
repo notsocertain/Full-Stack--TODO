@@ -3,7 +3,7 @@ const todoModel= require('../models/todo')
 
 const getTodos = async(req,res)=>{
     try{
-        const allTodos = await todoModel.find({}).sort({createdAt:-1})
+        const allTodos = await todoModel.find({}).sort({completed:1})
         res.status(200).send(allTodos)
     }catch(e){
         res.status(500).send(e.message)
@@ -14,6 +14,11 @@ const getTodos = async(req,res)=>{
 const createTodo = async(req,res)=>{
     const todo = req.body;
     try{
+        const existingTodo = await todoModel.findOne({ text: todo.text });
+        if (existingTodo) {
+            // If a todo with the same title exists, return an error
+            return res.status(400).send("Todo with the same title already exists");
+        }
         const newTodo = await todoModel.create(todo);
         res.status(201).send(newTodo);
     }catch(e){
@@ -30,7 +35,6 @@ const updateTodo = async(req,res)=>{
             return res.status(404).send(`There is no Todo of that ${id}`)
         }
         const todoId = {_id:id}
-
         const update = {completed: true};
         const updatedTodo = await todoModel.findOneAndUpdate(todoId,update)
         const afterTodo = await todoModel.findOne({_id:id})
